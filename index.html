@@ -1,1 +1,150 @@
-<h1> Hello Git!</h1>
+
+<html> 
+	<body>
+		<canvas id="canvas" height="450" width="600"></canvas>
+		<script> 
+			window.onload = function() {
+			    canvas = document.getElementById("canvas"),
+			    ctx = canvas.getContext("2d"),
+			    W = canvas.width;
+			    H = canvas.height;
+			    player1points = 0;
+			    player2points = 0;
+
+			    player1 = new Player(1);
+				player2 = new Player(2);
+				ball = new Ball();
+
+			    setInterval(draw, 10);
+			    function Ball(){
+			    	this.radius = 10;
+			    	this.x = W/2;
+			    	this.y = getRandomInt(this.radius, H-this.radius);
+			    	this.style = "white"; 
+			    	this.dx = 0;
+			    	this.dy = 0;
+			    	this.velocity = 2 ; 
+
+			    	if(getRandomInt(0, 1) == 0){
+		    			this.dx = -this.velocity;
+			    	}else{
+			    		this.dx = this.velocity;
+			    	}
+			    	if(getRandomInt(0, 1) == 0){
+			    		this.dy = -this.velocity;
+			    	}else{
+			    		this.dy = this.velocity;
+			    	}
+
+			    	this.winPoints = function(player1,player2) {
+			        	if(this.x < 0){
+			        		player2points += 1;
+				        	this.x = W/2;
+				        	this.y = H/2;
+			        	}else if(this.x > W){
+			        		player1points += 1;
+				        	this.x = W/2;
+				        	this.y = H/2;
+			        	}
+			      	}
+			    	this.draw = function() {
+			        	ctx.fillStyle=this.style;
+					    ctx.arc(this.x,this.y,this.radius,0,Math.PI*2, true);
+					    ctx.fill();
+			      	}
+			      	this.movement = function(player1,player2){
+			      		this.x += this.dx;
+			      		this.y += this.dy;
+			      		if(this.y+this.radius > H){
+			      			this.dy = -this.velocity;
+			      		}else if(this.y < 0){
+			      			this.dy = this.velocity;
+			      		}
+
+			      		for(i = player1.y; i < player1.y+player1.sizeH; i++){
+			      			if(this.y == i && this.x+this.radius == player1.x+player1.margin+player1.sizeW){
+			      				this.dx += this.velocity;
+			      			}
+			      		}
+			      		for(i = player2.y; i < player2.y+player2.sizeH; i++){
+			      			if(this.y == i && this.x+this.radius == player2.x){
+			      				this.dx += -this.velocity;
+			      			}
+			      		} 
+			      	}
+			      	this.update = function(player1,player2){
+			      		this.movement(player1,player2);
+			      		this.winPoints(player1,player2); 
+			      		this.draw()
+			      	}
+			    }
+			    function Player(nr){
+			    	this.sizeW = 10;
+			    	this.sizeH = 75;
+			    	this.margin = 10;
+			    	this.dy = 35;
+			    	this.points = 0;
+			    	if(nr == 1){
+				    	this.x = this.margin;
+			    	}else{
+			    		this.x = W-this.sizeW-this.margin; 
+			    	}
+			    	this.y = (H/2)-(this.sizeW/2)*20;
+			    	this.style = "white";
+			    	this.draw = function() {
+			        	ctx.fillStyle = this.style;
+			        	ctx.fillRect(this.x, this.y, this.sizeW, this.sizeH);
+			        	ctx.fill(); 
+			      	}
+			      	this.moveUp = function(){
+			      		this.y-=this.dy;
+			      		if(this.y < 0){
+			      			this.y = 0;
+			      		}
+			      	}
+			      	this.moveDown = function(){
+			      		this.y+=this.dy;
+			      		if(this.y+this.sizeH > H){
+			      			this.y = H-this.sizeH;
+			      		}
+			      	}
+			      	this.update = function(){
+			      		this.draw();
+			      	}
+			    }
+			    function placard(){
+			    	ctx.font = "60px Arial";
+			    	ctx.fillText(player1points,40,75);
+			    	ctx.fillText(player2points,W-80,75); 
+			    }
+			    function draw() {
+			    	ctx.clearRect(0, 0, W, H);
+			    	ctx.beginPath();
+			    	ctx.fillStyle = "black";
+			    	ctx.fillRect(0, 0, W, H);
+			        player1.update();
+			   		player2.update();
+			   		placard();			  
+			   		ball.update(player1,player2);
+			   		ctx.closePath();
+			    }
+			    function getRandomInt(min, max) {
+				    return Math.floor(Math.random() * (max - min + 1)) + min;
+				}
+
+			    document.onkeydown = function (e) {
+				    var keyCode = e.keyCode;
+				    if(keyCode == 90) {
+				        player1.moveDown();
+				    }else if(keyCode == 65) {
+				        player1.moveUp();
+				    }else if(keyCode == 77) {
+				        player2.moveDown();
+				    }else if(keyCode == 75) {
+				        player2.moveUp();
+				    }
+				};
+      		}
+		</script>
+	</body>
+</html>
