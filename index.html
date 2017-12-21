@@ -46,6 +46,7 @@
 				        	this.x = W/2;
 				        	this.y = H/2;
 			        	}
+						this.velocity = 2;
 			      	}
 			    	this.draw = function() {
 			        	ctx.fillStyle=this.style;
@@ -53,8 +54,8 @@
 					    ctx.fill();
 			      	}
 			      	this.movement = function(player1,player2){
-			      		this.x += this.dx;
-			      		this.y += this.dy;
+			      		this.x += this.dx + this.velocity;
+			      		this.y += this.dy + this.velocity;
 			      		if(this.y+this.radius > H){
 			      			this.dy = -this.velocity;
 			      		}else if(this.y < 0){
